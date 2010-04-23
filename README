@@ -21,11 +21,11 @@ Example JSON usage:
 
 //assumes $subscription_json contains json data. This can be from your app, or
 //populated from any Chargify Data object (inherits ChargifyBase) by calling the getJSON() method.
-//    ex. $subscription_xml = $chargify_subscription->getJSON();
+//    ex. $subscription_json = $chargify_subscription->getJSON();
 $test_mode = false;
 $request_format = 'JSON';
 $connector = new ChargifyConnector($test_mode);
-$new_subscription_json = $connector->requestCreateSubscription($subscription_xml,$request_format);
+$new_subscription_json = $connector->requestCreateSubscription($subscription_json,$request_format);
 
 
 Example internal class usage:
