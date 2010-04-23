@@ -65,7 +65,7 @@ $chargify_card->billing_country = 'USA';
 
 $chargify_subscription = new ChargifySubscription();
 //$chargify_subscription->customer_attributes is required 
-//(don't confuse with $chargify_subscription->credit_card.)
+//(don't confuse with $chargify_subscription->customer.)
 $chargify_subscription->customer_attributes = $chargify_customer;
 $chargify_subscription->credit_card_attributes = $chargify_card; //required (See above)
 $chargify_subscription->product_handle = "your product handle"; //required or product_id.
