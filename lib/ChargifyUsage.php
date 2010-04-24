@@ -38,4 +38,8 @@ class ChargifyUsage extends ChargifyBase
 	public function getAll($subscription_id, $component_id) {
 		return $this->connector->getAllMeteredComponents($subscription_id, $component_id);
 	}
+	
+	public function getAllByProductFamily($product_family_id) {
+		return $this->connector->getAllMeteredComponentsByProductFamily($product_family_id);
+	}
 }?>

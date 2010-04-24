@@ -473,6 +473,14 @@ class ChargifyConnector
 		return $components->response;		
 	}
 	
+	public function retrieveAllMeteredComponentsByProductFamily($product_family_id, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$base_url = "/product_families/{$product_family_id}/components" . $extension;
+
+		$components = $this->sendRequest($base_url, $format);
+		return $components->response;
+	}
+	
 	public function requestCreateMeteredComponent($subscription_id, $component_id, $componentRequest, $format = 'XML') {
 		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
 		$base_url = "/subscriptions/{$subscription_id}/components/{$component_id}/usages" . $extension;
@@ -535,7 +543,19 @@ class ChargifyConnector
 		}
 		
 	    return $component_objects;
-	}	
+	}
+	
+	public function getAllMeteredComponentsByProductFamily($product_family_id) {
+		$xml = $this->retrieveAllMeteredComponentsByProductFamily($product_family_id);	
+		$all_metered_components = new SimpleXMLElement($xml);
+		$component_objects = array();
+		
+		foreach ($all_metered_components as $metered_component) {
+			$component_objects[] = new ChargifyUsage($metered_component, $this->test_mode);
+		}
+		
+	    return $component_objects;
+	}
 	
 	public function getAllQuantityBasedComponents($subscription_id, $component_id) {
 		$xml = $this->retrieveAllQuantityBasedComponents($subscription_id, $component_id);
