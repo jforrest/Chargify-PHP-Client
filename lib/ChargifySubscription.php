@@ -128,11 +128,11 @@ class ChargifySubscription
 	}
 	
 	public function create() {
-		return $this->connector->createCustomerAndSubscription($this);
+		return $this->connector->createSubscription($this);
 	}
 	
 	public function getByCustomerID($customer_id) {
-		return $this->connector->createSubscription($customer_id);
+		return $this->connector->getSubscriptionsByCustomerID($customer_id);
 	}
 	
 	public function getByID() {
@@ -150,7 +150,7 @@ class ChargifySubscription
 		if ($chargify_product == null) {
 			$chargify_product = $this->product;
 		}
-		return $this->connector->updateSubscriptionProduct($this->id, $chargify_product);
+		return $this->connector->updateSubscriptionProductProrated($this->id, $chargify_product);
 	}	
 	
 	public function updateCreditCard($credit_card_attributes = null) {
@@ -168,6 +168,6 @@ class ChargifySubscription
 	}
 	
 	public function reactivate() {
-		return $this->connector->reactivate($this->id);
+		return $this->connector->reactivateSubscription($this->id);
 	}
 }?>
