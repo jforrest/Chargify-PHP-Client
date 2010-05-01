@@ -43,7 +43,7 @@ class ChargifyQuantityBasedComponent extends ChargifyBase
 			$node = $xml->addChild('component');
 		}
 	  	foreach (get_object_vars($this) as $key=>$val) {
-	  		if ($val) {
+	  		if ($key != 'connector' && $val !== null) {
 	  			if (isset($node)) {
 	  				$node->addChild($key, htmlentities($val, ENT_QUOTES));
 	  			} else {
@@ -52,7 +52,6 @@ class ChargifyQuantityBasedComponent extends ChargifyBase
 	  		}
 	  	}
 	  	return $xml;
-	  	//return $xml->asXML();
 	}
 	
 	public function create($subscription_id, $component_id) {
