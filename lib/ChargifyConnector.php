@@ -333,9 +333,6 @@ class ChargifyConnector
 	}
 	
 	public function updateSubscriptionProductProrated($subscription_id, $chargify_product) {
-		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
-		$base_url = "/subscriptions/{$subscription_id}/migrations" . $extension;
-		
 		$chargify_migration = new ChargifyMigration();
 		$chargify_migration->product_handle = $chargify_product->handle;
 		$chargify_migration->product_id = $chargify_product->id;
@@ -346,9 +343,6 @@ class ChargifyConnector
 	}	
 	
 	public function updateSubscriptionCreditCard($subscription_id, $chargify_credit_card) {
-		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
-		$base_url = "/subscriptions/{$subscription_id}" . $extension;
-		
 		$chargify_subscription = new ChargifySubscription(null, $this->test_mode);
 		$chargify_subscription->credit_card_attributes = $chargify_credit_card;
 

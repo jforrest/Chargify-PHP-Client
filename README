@@ -2,6 +2,8 @@ Chargify PHP Client library
 Jason Forrest, 2010 (jason.forrest@rigbooks.com)
 
 This is a PHP client for the Chargify API. It allows JSON, XML or internal classes to be used.
+All calls will raise an exception on error, so make sure to wrap calls in a try...catch block.
+Also, be sure to check out the Wiki for more tips: http://wiki.github.com/jforrest/Chargify-PHP-Client/
 
 Example XML usage:
 
@@ -11,8 +13,13 @@ Example XML usage:
 $test_mode = false;
 $request_format = 'XML';
 $connector = new ChargifyConnector($test_mode);
-$new_subscription_xml = $connector->requestCreateSubscription($subscription_xml,$request_format);
 
+try {
+	$new_subscription_xml = $connector->requestCreateSubscription($subscription_xml,$request_format);
+} catch (ChargifyValidationException $cve) {
+	//process error handling code here.
+	echo $cve->getMessage();
+}
 
 NOTE: all functions in ChargifyConnector whose names begin with 'retrieve' or 'request' return either 
 pure XML or pure JSON, depending on the format of the request.
@@ -25,7 +32,13 @@ Example JSON usage:
 $test_mode = false;
 $request_format = 'JSON';
 $connector = new ChargifyConnector($test_mode);
-$new_subscription_json = $connector->requestCreateSubscription($subscription_json,$request_format);
+
+try {
+	$new_subscription_json = $connector->requestCreateSubscription($subscription_json,$request_format);
+} catch (ChargifyValidationException $cve) {
+        //process error handling code here.
+        echo $cve->getMessage();
+}
 
 
 Example internal class usage:
@@ -38,7 +51,13 @@ $chargify_customer->email = "a@b.com";
 $chargify_customer->first_name = "Charles";
 $chargify_customer->last_name = "Jones";
 $chargify_customer->reference = "123b1j23kjb";
-$new_customer = $chargify_customer->create();
+
+try {
+	$new_customer = $chargify_customer->create();
+} catch (ChargifyValidationException $cve) {
+        //process error handling code here.
+        echo $cve->getMessage();
+}
 
 
 
@@ -70,6 +89,12 @@ $chargify_subscription->customer_attributes = $chargify_customer;
 $chargify_subscription->credit_card_attributes = $chargify_card; //required (See above)
 $chargify_subscription->product_handle = "your product handle"; //required or product_id.
 $chargify_subscription->coupon_code = "coupon_code"; //optional
-$new_subscription = $chargify_subscription->create();
- 
+
+try {
+	$new_subscription = $chargify_subscription->create();
+ } catch (ChargifyValidationException $cve) {
+        //process error handling code here.
+        echo $cve->getMessage();
+}
+
 
