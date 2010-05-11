@@ -113,8 +113,25 @@ class ChargifyConnector
 		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
 		$base_url = "/customers/{$id}" . $extension;
 
+		$customer = $this->sendRequest($base_url, $format);
+		if ($customer->code == 200) {
+			return $customer->response;
+		} elseif ($customer->code == 404) {
+			$errors = new SimpleXMLElement($customer->response);
+			throw new ChargifyNotFoundException($customer->code, $errors);
+		}
+	}
+	
+	public function retrieveCustomerByReferenceID($reference_id, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$base_url = "/customers/lookup{$extension}?reference=". urlencode($reference_id);
+
 		$customer = $this->sendRequest($base_url, $format);  	
-		return $customer->response;  	
+		if ($customer->code == 200) {
+			return $customer->response;
+		} elseif ($customer->code == 404) {			
+			throw new ChargifyNotFoundException($customer->code, array());
+		}
 	}
 	
 	public function requestCreateCustomer($customerRequest, $format = 'XML') {
@@ -196,7 +213,15 @@ class ChargifyConnector
 	    $customer = new ChargifyCustomer($customer_xml_node, $this->test_mode);
 	    
 	    return $customer;
-	}	
+	}
+	
+	public function getCustomerByReferenceID($reference_id) {
+	    $xml = $this->retrieveCustomerByReferenceID($reference_id);
+	    $customer_xml_node = new SimpleXMLElement($xml);
+	    $customer = new ChargifyCustomer($customer_xml_node, $this->test_mode);
+	    
+	    return $customer;
+	}
 	
 	/****************************************************
 	 ************     PRODUCT FUNCTIONS     *************
@@ -571,7 +596,35 @@ class ChargifyConnector
 	 */
 	public function retrieveAllTransactions($format = 'XML', $options = array()) {
 		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
-		
+		$params = $this->getOptionParams($options);
+		$base_url = "/transactions" . $extension. $params;
+
+		$xml = $this->sendRequest($base_url, $format, 'GET');
+
+		if ($xml->code == 200) { //SUCCESS
+			return $xml->response;
+		} else { //ERROR
+			$errors = new SimpleXMLElement($xml->response);
+			throw new ChargifyValidationException($xml->code, $errors);  		
+		}				
+	}
+	
+	public function retrieveTransactionsBySubscriptionID($subscription_id, $format='XML', $options=array()) {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$params = $this->getOptionParams($options);
+		$base_url = "/subscriptions/{$subscription_id}/transactions" . $extension. $params;
+
+		$xml = $this->sendRequest($base_url, $format, 'GET');
+
+		if ($xml->code == 200) { //SUCCESS
+			return $xml->response;
+		} else { //ERROR
+			$errors = new SimpleXMLElement($xml->response);
+			throw new ChargifyValidationException($xml->code, $errors);  		
+		}		
+	}
+	
+	private function getOptionParams($options) {
 		$params = '';
 		$paramsArr = array();
 		foreach ($options as $key => $val) {
@@ -589,16 +642,7 @@ class ChargifyConnector
 			$params = "?".$params;
 		}
 		
-		$base_url = "/transactions" . $extension. $params;
-
-		$xml = $this->sendRequest($base_url, $format, 'GET');
-
-		if ($xml->code == 200) { //SUCCESS
-			return $xml->response;
-		} else { //ERROR
-			$errors = new SimpleXMLElement($xml->response);
-			throw new ChargifyValidationException($xml->code, $errors);  		
-		}				
+		return $params;
 	}
 	
 	public function getAllTransactions($options = array()) {
@@ -611,6 +655,16 @@ class ChargifyConnector
 		}
 		return $result;		
 	}
-}
- 
+	
+	public function getTransactionsBySubscriptionID($subscription_id, $options = array()) {
+		$xml = $this->retrieveTransactionsBySubscriptionID($subscription_id, 'XML', $options);
+		$result = array();
+		$transactions = new SimpleXMLElement($xml);
+		foreach($transactions as $key => $element)
+		{
+			$result[] = new ChargifyTransaction($element, $this->test_mode);
+		}
+		return $result;		
+	}	
+} 
 ?>

@@ -36,4 +36,8 @@ class ChargifyTransaction extends ChargifyBase
 	public function getAll($options = array()) {
 		return $this->connector->getAllTransactions($options);
 	}
+	
+	public function getBySubscriptionID($subscription_id, $options = array()) {
+		return $this->connector->getTransactionsBySubscriptionID($subscription_id, $options);
+	}
 }

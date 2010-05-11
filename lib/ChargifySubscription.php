@@ -20,6 +20,7 @@ class ChargifySubscription
 	var $customer;
 	var $credit_card;
 	var $cancellation_message;
+	var $components;
 	
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
@@ -36,8 +37,6 @@ class ChargifySubscription
 	var $expires_at;
 	var $created_at;
 	var $updated_at;
-	
-	var $components;
 	
 	private $connector;
 	public function __construct(SimpleXMLElement $subscription_xml_node = null, $test_mode = false)
@@ -136,7 +135,7 @@ class ChargifySubscription
 	}
 	
 	public function getByID() {
-		return $this->connector->getSubscriptionsByID($id);
+		return $this->connector->getSubscriptionsByID($this->id);
 	}
 	
 	public function updateProduct($chargify_product = null) {

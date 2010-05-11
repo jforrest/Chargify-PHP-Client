@@ -58,6 +58,10 @@ class ChargifyCustomer extends ChargifyBase
   	public function getByID() {
   		return $this->connector->getCustomerByID($this->id);
   	}
+  	
+  	public function getByReferenceID() {
+  		return $this->connector->getCustomerByReferenceID($this->reference);
+  	}
 }
  
 ?>
