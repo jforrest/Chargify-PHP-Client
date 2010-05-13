@@ -80,7 +80,7 @@ $chargify_card->billing_address = "123 any st";
 $chargify_card->billing_city = "Anytown";
 $chargify_card->billing_state = "CA";
 $chargify_card->billing_zip = "55555";
-$chargify_card->billing_country = 'USA';
+$chargify_card->billing_country = 'US';
 
 $chargify_subscription = new ChargifySubscription();
 //$chargify_subscription->customer_attributes is required 
