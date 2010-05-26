@@ -130,12 +130,18 @@ class ChargifySubscription
 		return $this->connector->createSubscription($this);
 	}
 	
-	public function getByCustomerID($customer_id) {
+	public function getByCustomerID($customer_id = null) {
+		if ($customer_id == null) {
+			$customer_id = $this->customer_id;
+		}
 		return $this->connector->getSubscriptionsByCustomerID($customer_id);
 	}
 	
-	public function getByID() {
-		return $this->connector->getSubscriptionsByID($this->id);
+	public function getByID($subscription_id = null) {
+		if ($subscription_id == null) {
+			$subscription_id = $this->id;
+		}
+		return $this->connector->getSubscriptionsByID($subscription_id);
 	}
 	
 	public function updateProduct($chargify_product = null) {
