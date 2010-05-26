@@ -2,6 +2,8 @@
 require_once('ChargifyBase.php');
 require_once('ChargifyCharge.php');
 require_once('ChargifyConnector.php');
+require_once('ChargifyCoupon.php');
+require_once('ChargifyCredit.php');
 require_once('ChargifyCreditCard.php');
 require_once('ChargifyCustomer.php');
 require_once('ChargifyException.php');

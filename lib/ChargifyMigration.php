@@ -9,6 +9,8 @@ class ChargifyMigration
 	//******************************
 	var $product_handle;
 	var $product_id;
+	var $include_trial;
+	var $include_initial_charge;
 
 	public function __construct(SimpleXMLElement $product_xml_node = null)
 	{

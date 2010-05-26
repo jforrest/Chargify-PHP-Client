@@ -9,10 +9,10 @@ Reference Documentation: http://support.chargify.com/faqs/api/api-authentication
 ******************************************************************************************/
 class ChargifyConnector
 {
-	private $api_key = 'YOUR API KEY HERE';
-	private $test_api_key = 'YOUR TEST API KEY HERE';
-	private $domain = 'YOUR DOMAIN'; //your chargify domain, e.g. if you have [your-domain].chargify.com, then enter "your-domain" only.
-	private $test_domain = 'YOUR TEST DOMAIN';
+	private $api_key = 'cnnBWtdpRF1dCD6eJ1dy';
+	private $test_api_key = 'cnnBWtdpRF1dCD6eJ1dy';
+	private $domain = 'rigbooks';
+	private $test_domain = 'rigbooks-test';
 	
 	private $active_api_key;
 	private $active_domain;
@@ -21,20 +21,25 @@ class ChargifyConnector
 	private $username;
 	private $password;
   
-	public function __construct($test_mode = false) {
+	public function __construct($test_mode = false, $active_domain = null, $active_api_key = null) {
 		$this->test_mode = $test_mode;
-		
-		if($test_mode)
-		{
-		  $this->active_api_key = $this->test_api_key;
-		  $this->active_domain = $this->test_domain;
-		}
-		else
-		{
-		  $this->active_api_key = $this->api_key;
-		  $this->active_domain = $this->domain;
-		}
-		
+		if ($active_api_key == null || $active_domain == null) {
+			if($test_mode)
+			{
+				$this->setActiveDomain($this->test_domain, $this->test_api_key);
+			}
+			else
+			{
+				$this->setActiveDomain($this->domain, $this->api_key);
+			}
+		} else {
+			$this->setActiveDomain($active_domain, $active_api_key);
+		}		
+	}
+	
+	public function setActiveDomain($active_domain, $active_api_key) {
+		$this->active_domain = $active_domain;
+		$this->active_api_key = $active_api_key;
 		$this->username = $this->active_api_key;
 		$this->password = 'x';
 	}
@@ -278,7 +283,78 @@ class ChargifyConnector
 	    $xml = $this->retrieveProductByHandle($product_handle);
 	    $product = new SimpleXMLElement($xml);
 	    return new ChargifyProduct($product, $this->test_mode);
-	}	
+	}
+	
+	
+	/****************************************************
+	 ************     COUPON FUNCTIONS     **************
+	 ****************************************************/
+
+	
+	function retrieveCouponByID($product_family_id, $coupon_id, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+  		$base_url = "/product_families/{$product_family_id}/coupons/{$coupon_id}" . $extension;
+
+	  	$coupon = $this->sendRequest($base_url, $format);
+	  	if ($coupon->code == 200) {
+	  		return $coupon->response;
+	  	} elseif ($coupon->code == 404) {
+	  		throw new ChargifyNotFoundException(404, "Coupon id: [{$coupon_id}] was not found.");
+	  	}
+	}
+	
+	function retrieveCouponByCode($product_family_id, $coupon_code, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+  		$base_url = "/product_families/{$product_family_id}/coupons/find" . $extension;
+  		
+  		$parameters = "?code=".urlencode($coupon_code);
+
+	  	$coupon = $this->sendRequest($base_url.$parameters, $format);
+	  	if ($coupon->code == 200) {
+	  		return $coupon->response;
+	  	} elseif ($coupon->code == 404) {
+	  		throw new ChargifyNotFoundException(404, "Coupon code: [{$coupon_code}] was not found.");
+	  	}
+	}
+	
+	function getCouponByID($product_family_id, $coupon_id) {
+	    $xml = $this->retrieveCouponByID($product_family_id, $coupon_id);
+	    $coupon = new SimpleXMLElement($xml);
+	    return new ChargifyCoupon($coupon, $this->test_mode);
+	}
+
+	function getCouponByCode($product_family_id, $coupon_code) {
+	    $xml = $this->retrieveCouponByCode($product_family_id, $coupon_code);
+	    $coupon = new SimpleXMLElement($xml);
+	    return new ChargifyCoupon($coupon, $this->test_mode);
+	}
+
+	/****************************************************
+	 ************     CREDIT FUNCTIONS     **************
+	 ****************************************************/
+
+	
+	function requestCreateCredit($subscription_id, $creditRequest, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$base_url = "/subscriptions/{$subscription_id}/credits" . $extension;
+
+		$xml = $this->sendRequest($base_url, $format, 'POST', $creditRequest);
+		
+		if ($xml->code == 201) { //CREATED			
+			return $xml->response;
+		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
+			$errors = new SimpleXMLElement($xml->response);
+			throw new ChargifyValidationException($xml->code, $errors);  		
+		} elseif ($xml->code == 404) { //NOT FOUND
+			throw new ChargifyNotFoundException(404, "Subscription id: [{$subscription_id}] was not found.");
+		}
+	}
+	
+	public function createCredit($subscription_id, $chargify_credit) {
+		$xml = $this->requestCreateCredit($subscription_id, $chargify_credit->getXML());
+		$credit = new SimpleXMLElement($xml);
+		return new ChargifyCredit($credit, $this->test_mode);
+	}
 	
 	/****************************************************
 	 *********     SUBSCRIPTION FUNCTIONS     ***********
@@ -666,5 +742,5 @@ class ChargifyConnector
 		}
 		return $result;		
 	}	
-} 
+}
 ?>
