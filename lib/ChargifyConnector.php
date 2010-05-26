@@ -9,10 +9,10 @@ Reference Documentation: http://support.chargify.com/faqs/api/api-authentication
 ******************************************************************************************/
 class ChargifyConnector
 {
-	private $api_key = 'cnnBWtdpRF1dCD6eJ1dy';
-	private $test_api_key = 'cnnBWtdpRF1dCD6eJ1dy';
-	private $domain = 'rigbooks';
-	private $test_domain = 'rigbooks-test';
+	private $api_key = 'YOUR API KEY HERE';
+	private $test_api_key = 'YOUR TEST API KEY HERE';
+	private $domain = 'YOUR DOMAIN'; //your chargify domain, e.g. if you have [your-domain].chargify.com, then enter "your-domain" only.
+	private $test_domain = 'YOUR TEST DOMAIN';
 	
 	private $active_api_key;
 	private $active_domain;
