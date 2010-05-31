@@ -51,8 +51,8 @@ class ChargifyCustomer extends ChargifyBase
   		return $this->connector->deleteCustomer($this->id);
   	}
 
-  	public function getAllCustomers() {
-  		return $this->connector->getAllCustomers();
+  	public function getAllCustomers($page_num = 1) {
+  		return $this->connector->getAllCustomers($page_num);
   	}
   	
   	public function getByID() {

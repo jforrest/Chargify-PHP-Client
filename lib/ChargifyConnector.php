@@ -196,9 +196,9 @@ class ChargifyConnector
 		}
 	}
 	
-	public function getAllCustomers()
+	public function getAllCustomers($page_num = 1)
 	{
-	    $xml = $this->retrieveAllCustomers();
+	    $xml = $this->retrieveAllCustomers($page_num);
 	    $all_customers = new SimpleXMLElement($xml);
 	    $customer_objects = array();
 	    
