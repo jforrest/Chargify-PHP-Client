@@ -5,6 +5,9 @@ This is a PHP client for the Chargify API. It allows JSON, XML or internal class
 All calls will raise an exception on error, so make sure to wrap calls in a try...catch block.
 Also, be sure to check out the Wiki for more tips: http://wiki.github.com/jforrest/Chargify-PHP-Client/
 
+Abraham Williams has created a great Getting Started guide for this library, I recommend you check it out
+for example usage: http://github.com/abraham/chargify
+
 Example XML usage:
 
 //assumes $subscription_xml contains xml data. This can be from your app, or
