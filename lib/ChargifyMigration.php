@@ -24,9 +24,9 @@ class ChargifyMigration
 
 	public function getXML() {
 		if ($this->product_id) {
-			return "<?xml version='1.0' encoding='utf-8'?><product_id>{$this->product_id}</product_id>";
+			return "<?xml version='1.0' encoding='utf-8'?><migration><product_id>{$this->product_id}</migration></product_id>";
 		} elseif ($this->product_handle) {
-			return "<?xml version='1.0' encoding='utf-8'?><product_handle>{$this->product_handle}</product_handle>";
+			return "<?xml version='1.0' encoding='utf-8'?><migration><product_handle>{$this->product_handle}</migration></product_handle>";
 		}
 	}
 	
