@@ -41,14 +41,14 @@ class ChargifyMigration
 		if ($this->product_id) {
 			return '{"migration": {
 						"product_id": "'.$this->product_id.'"
-						"include_trial": "'.$this->include_trial.'"
-						"include_initial_charge": "'.$this->include_initial_charge.'"
+						"include_trial": "'.($this->include_trial ? '1' : '0').'"
+						"include_initial_charge": "'.($this->include_initial_charge ? '1' : '0').'"
 					}}';
 		} elseif ($this->product_handle) {
 			return '{"migration": {
 						"product_handle": "'.$this->product_handle.'"
-						"include_trial": "'.$this->include_trial.'"
-						"include_initial_charge": "'.$this->include_initial_charge.'"
+						"include_trial": "'.($this->include_trial ? '1' : '0').'"
+						"include_initial_charge": "'.($this->include_initial_charge ? '1' : '0').'"
 					}}';
 		}		
 	}
