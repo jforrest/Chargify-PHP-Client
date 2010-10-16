@@ -13,6 +13,7 @@ class ChargifySubscription
 	var $product_handle;
 	var $product_id;
 	var $coupon_code;
+	var $next_billing_at;
 
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
@@ -130,6 +131,10 @@ class ChargifySubscription
 		return $this->connector->createSubscription($this);
 	}
 	
+	public function getAll($page = 1, $per_page = 2000) {
+		return $this->connector->getSubscriptions($page, $per_page);
+	}
+	
 	public function getByCustomerID($customer_id = null) {
 		if ($customer_id == null) {
 			$customer_id = $this->customer_id;
@@ -174,5 +179,9 @@ class ChargifySubscription
 	
 	public function reactivate() {
 		return $this->connector->reactivateSubscription($this->id);
+	}
+	
+	public function resetBalance() {
+		return $this->connector->resetSubscriptionBalance($this->id);
 	}
 }?>

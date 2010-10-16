@@ -360,6 +360,15 @@ class ChargifyConnector
 	 *********     SUBSCRIPTION FUNCTIONS     ***********
 	 ****************************************************/
 	
+	public function retrieveSubscriptions($page = 1, $per_page = 2000, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$params = $this->getOptionParams(array('page'=>$page,'per_page'=>$per_page));
+  		$base_url = "/subscriptions" . $extension . $params;
+
+	  	$customer = $this->sendRequest($base_url, $format);  	
+	    return $customer->response;
+	}
+	
 	public function retrieveSubscriptionsByCustomerID($id, $format = 'XML') {
 		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
   		$base_url = "/customers/{$id}/subscriptions" . $extension;
@@ -433,10 +442,12 @@ class ChargifyConnector
 		return new ChargifySubscription($subscription, $this->test_mode);
 	}
 	
-	public function updateSubscriptionProductProrated($subscription_id, $chargify_product) {
+	public function updateSubscriptionProductProrated($subscription_id, $chargify_product, $include_trial = false, $include_initial_charge = false) {
 		$chargify_migration = new ChargifyMigration();
 		$chargify_migration->product_handle = $chargify_product->handle;
 		$chargify_migration->product_id = $chargify_product->id;
+		$chargify_migration->include_trial = $include_trial;
+		$chargify_migration->include_initial_charge = $include_initial_charge;
 
 		$xml = $this->requestUpdateSubscriptionProrated($subscription_id, $chargify_migration->getXML());
 		$subscription = new SimpleXMLElement($xml);
@@ -489,6 +500,40 @@ class ChargifyConnector
 		$xml = $this->requestReactivateSubscription($subscription_id);		
 		$subscription = new SimpleXMLElement($xml);
 		return new ChargifySubscription($subscription, $this->test_mode);
+	}
+	
+	public function requestResetSubscriptionBalance($subscription_id, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$base_url = "/subscriptions/{$subscription_id}/reset_balance" . $extension;
+		
+		$xml = $this->sendRequest($base_url, $format, 'PUT');		
+		
+		if ($xml->code == 200) {
+			return $xml->response;
+		} else {
+			$errors = new SimpleXMLElement($xml->response);
+			throw new ChargifyValidationException($xml->code, $errors);
+		}
+	}
+	
+	public function resetSubscriptionBalance($subscription_id) {
+		$xml = $this->requestResetSubscriptionBalance($subscription_id);		
+		$subscription = new SimpleXMLElement($xml);
+		return new ChargifySubscription($subscription, $this->test_mode);
+	}
+	
+	public function getSubscriptions($page = 1, $per_page = 2000) {
+	    $xml = $this->retrieveSubscriptions($page, $per_page);
+	    $subscriptions = new SimpleXMLElement($xml);
+	    $subscription_objects = array();
+	    
+	    foreach($subscriptions as $subscription)
+	    {
+	      $temp_sub = new ChargifySubscription($subscription, $this->test_mode);
+	      array_push($subscription_objects, $temp_sub);
+	    }
+	    
+	    return $subscription_objects;
 	}
 	
 	public function getSubscriptionsByCustomerID($id)

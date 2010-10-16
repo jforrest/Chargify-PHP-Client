@@ -22,11 +22,14 @@ class ChargifyMigration
 		}
 	}
 
+	//thanks to Andrew Watson (https://github.com/andrewwatson) for helping improve this functionality.
 	public function getXML() {
 		if ($this->product_id) {
-			return "<?xml version='1.0' encoding='utf-8'?><product_id>{$this->product_id}</product_id>";
+			return sprintf("<?xml version='1.0' encoding='utf-8'?><migration><product_id>%s</product_id><include_trial>%s</include_trial><include_initial_charge>%s</include_initial_charge></migration>",
+				$this->product_id, $this->include_trial ? '1' : '0', $this->include_initial_charge ? '1' : '0');
 		} elseif ($this->product_handle) {
-			return "<?xml version='1.0' encoding='utf-8'?><product_handle>{$this->product_handle}</product_handle>";
+			return sprintf("<?xml version='1.0' encoding='utf-8'?><migration><product_handle>%s</product_handle><include_trial>%s</include_trial><include_initial_charge>%s</include_initial_charge></migration>",
+				$this->product_handle, $this->include_trial ? '1' : '0', $this->include_initial_charge ? '1' : '0');
 		}
 	}
 	
@@ -36,9 +39,17 @@ class ChargifyMigration
 	
 	public function getJSON() {
 		if ($this->product_id) {
-			return '{"product_id": "'.$this->product_id.'"}';
+			return '{"migration": {
+						"product_id": "'.$this->product_id.'"
+						"include_trial": "'.$this->include_trial.'"
+						"include_initial_charge": "'.$this->include_initial_charge.'"
+					}}';
 		} elseif ($this->product_handle) {
-			return '{"product_handle": "'.$this->product_handle.'"}';
+			return '{"migration": {
+						"product_handle": "'.$this->product_handle.'"
+						"include_trial": "'.$this->include_trial.'"
+						"include_initial_charge": "'.$this->include_initial_charge.'"
+					}}';
 		}		
 	}
 }
