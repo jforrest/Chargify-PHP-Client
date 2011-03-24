@@ -1,36 +1,36 @@
 <?php
- 
+
 //Reference Documentation: http://support.chargify.com/faqs/technical/quantity-based-components
 
-class ChargifyQuantityBasedComponent extends ChargifyBase 
+class ChargifyQuantityBasedComponent extends ChargifyBase
 {
 	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	var $allocated_quantity;
 	var $component_id;
-	
+
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
-	//******************************	
+	//******************************
 	var $name;
 	var $kind;
 	var $subscription_id;
 	var $pricing_scheme;
 	var $unit_name;
-		
+
 	private $connector;
-	public function __construct(SimpleXMLElement $usage_xml_node = null, $test_mode = false)
+	public function __construct(ChargifyConnector $connector, SimpleXMLElement $usage_xml_node = null)
 	{
-		$this->connector = new ChargifyConnector($test_mode);
+		$this->connector = $connector;
 		if ($usage_xml_node) {
 			//Load object dynamically and convert SimpleXMLElements into strings
-			foreach($usage_xml_node as $key => $element) { 
-				$this->$key = (string)$element; 
+			foreach($usage_xml_node as $key => $element) {
+				$this->$key = (string)$element;
 			}
 		}
 	}
-	
+
 	protected function getName() {
 		return "component";
 	}
@@ -53,17 +53,17 @@ class ChargifyQuantityBasedComponent extends ChargifyBase
 	  	}
 	  	return $xml;
 	}
-	
+
 	public function create($subscription_id, $component_id) {
 		return $this->connector->createQuantityBasedComponent($subscription_id, $component_id, $this);
 	}
-	
+
 	public function update($subscription_id, $component_id) {
-		return $this->connector->updateQuantityBasedComponent($subscription_id, $component_id, $this);	
+		return $this->connector->updateQuantityBasedComponent($subscription_id, $component_id, $this);
 	}
-	
+
 	public function getAll($subscription_id, $component_id) {
 		return $this->connector->getAllQuantityBasedComponents($subscription_id, $component_id);
 	}
 
-}?>
+}

@@ -1,16 +1,16 @@
 <?php
- 
+
 //Reference Documentation: http://support.chargify.com/faqs/api/api-credits
- 
+
 class ChargifyCredit extends ChargifyBase
 {
-	//******************************	
+	//******************************
 	//** INPUT & OUTPUT VARIABLES **
 	//******************************
 	var $amount;
 	var $amount_in_cents;
 	var $memo;
-	
+
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
 	//******************************
@@ -23,16 +23,16 @@ class ChargifyCredit extends ChargifyBase
 	var $created_at;
 
 	private $connector;
-	public function __construct(SimpleXMLElement $cc_xml_node = null, $test_mode = false)
+	public function __construct(ChargifyConnector $connector, SimpleXMLElement $cc_xml_node = null)
 	{
-		$this->connector = new ChargifyConnector($test_mode);
+		$this->connector = $connector;
 		if ($cc_xml_node) {
 			//Load object dynamically and convert SimpleXMLElements into strings
 			foreach($cc_xml_node as $key => $element) { $this->$key = (string)$element; }
 		}
 	}
-	
+
 	protected function getName() {
 		return "credit";
-	}	
-}?>
+	}
+}

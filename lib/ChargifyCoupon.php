@@ -1,7 +1,7 @@
 <?php
- 
+
 //Reference Documentation: http://support.chargify.com/faqs/api/api-coupons
- 
+
 class ChargifyCoupon extends ChargifyBase
 {
 	//******************************
@@ -18,32 +18,32 @@ class ChargifyCoupon extends ChargifyBase
 	var $product_family_id;
 	var $start_date;
 	var $updated_at;
-	
+
 	private $connector;
-	
-	public function __construct(SimpleXMLElement $cc_xml_node = null, $test_mode = false)
+
+	public function __construct(ChargifyConnector $connector, SimpleXMLElement $cc_xml_node = null)
 	{
-		$this->connector = new ChargifyConnector($test_mode);
+		$this->connector = $connector;
 		if ($cc_xml_node) {
 			//Load object dynamically and convert SimpleXMLElements into strings
 			foreach($cc_xml_node as $key => $element) { $this->{str_ireplace("-","_",$key)} = (string)$element; }
 		}
 	}
-	
+
 	protected function getName() {
 		return "coupon";
 	}
-	
+
 	public function getByID($product_family_id = null, $coupon_id = null) {
-		if ($product_family_id == null) { 
-			$product_family_id = $this->product_family_id; 
+		if ($product_family_id == null) {
+			$product_family_id = $this->product_family_id;
 		}
 		if ($coupon_id == null) {
 			$coupon_id = $this->id;
 		}
-		return $this->connector->getCouponByID($product_family_id, $coupon_id);		
+		return $this->connector->getCouponByID($product_family_id, $coupon_id);
 	}
-	
+
 	function getByCode($product_family_id = null, $coupon_code = null) {
 		if ($product_family_id == null) {
 			$product_family_id = $this->product_family_id;
@@ -53,4 +53,4 @@ class ChargifyCoupon extends ChargifyBase
 		}
 	    return $this->connector->getCouponByCode($product_family_id, $coupon_code);
 	}
-}?>
+}

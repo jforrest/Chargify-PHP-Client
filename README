@@ -13,9 +13,11 @@ Example XML usage:
 //assumes $subscription_xml contains xml data. This can be from your app, or
 //populated from any Chargify Data object (inherits ChargifyBase) by calling the getXML() method. 
 //    ex. $subscription_xml = $chargify_subscription->getXML();
-$test_mode = false;
 $request_format = 'XML';
-$connector = new ChargifyConnector($test_mode);
+$domain = null;
+$api_key = 'YOUR_API_KEY';
+
+$connector = new ChargifyConnector($domain, $api_key);
 
 try {
 	$new_subscription_xml = $connector->requestCreateSubscription($subscription_xml,$request_format);
@@ -32,9 +34,11 @@ Example JSON usage:
 //assumes $subscription_json contains json data. This can be from your app, or
 //populated from any Chargify Data object (inherits ChargifyBase) by calling the getJSON() method.
 //    ex. $subscription_json = $chargify_subscription->getJSON();
-$test_mode = false;
 $request_format = 'JSON';
-$connector = new ChargifyConnector($test_mode);
+$domain = null;
+$api_key = 'YOUR_API_KEY';
+
+$connector = new ChargifyConnector($domain, $api_key);
 
 try {
 	$new_subscription_json = $connector->requestCreateSubscription($subscription_json,$request_format);
@@ -46,10 +50,15 @@ try {
 
 Example internal class usage:
 
+// setup connector
+$domain = null;
+$api_key = 'YOUR_API_KEY';
+
+$connector = new ChargifyConnector($domain, $api_key);
+
 //Customer creation
-$test_mode = false;
 $xml_import = null; //this is useful for populating from API response.
-$chargify_customer = new ChargifyCustomer(null, $test_mode);
+$chargify_customer = new ChargifyCustomer($connector, $xml_import);
 $chargify_customer->email = "a@b.com";
 $chargify_customer->first_name = "Charles";
 $chargify_customer->last_name = "Jones";
@@ -66,7 +75,7 @@ try {
 
 //Subscription creation
 //create customer and credit card first
-$chargify_customer = new ChargifyCustomer(); //defaults to same as above
+$chargify_customer = new ChargifyCustomer($connector); //defaults to same as above
 $chargify_customer->email = "a@b.com";
 $chargify_customer->first_name = "Charles";
 $chargify_customer->last_name = "Jones";
@@ -85,7 +94,7 @@ $chargify_card->billing_state = "CA";
 $chargify_card->billing_zip = "55555";
 $chargify_card->billing_country = 'US';
 
-$chargify_subscription = new ChargifySubscription();
+$chargify_subscription = new ChargifySubscription($connector);
 //$chargify_subscription->customer_attributes is required 
 //(don't confuse with $chargify_subscription->customer.)
 $chargify_subscription->customer_attributes = $chargify_customer;
@@ -99,5 +108,3 @@ try {
         //process error handling code here.
         echo $cve->getMessage();
 }
-
-
