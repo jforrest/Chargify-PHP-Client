@@ -25,10 +25,10 @@ class ChargifyConnector
 
 	/**
 	 *
-	 * @param string $domain
 	 * @param string $api_key
+	 * @param string $domain
 	 */
-	public function __construct($domain, $api_key) {
+	public function __construct($api_key, $domain = null) {
 	  $this->domain   = $domain;
     $this->api_key  = $api_key;
     $this->username = $api_key;

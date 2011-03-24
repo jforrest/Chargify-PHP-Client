@@ -14,10 +14,9 @@ Example XML usage:
 //populated from any Chargify Data object (inherits ChargifyBase) by calling the getXML() method. 
 //    ex. $subscription_xml = $chargify_subscription->getXML();
 $request_format = 'XML';
-$domain = null;
 $api_key = 'YOUR_API_KEY';
 
-$connector = new ChargifyConnector($domain, $api_key);
+$connector = new ChargifyConnector($api_key);
 
 try {
 	$new_subscription_xml = $connector->requestCreateSubscription($subscription_xml,$request_format);
@@ -35,10 +34,9 @@ Example JSON usage:
 //populated from any Chargify Data object (inherits ChargifyBase) by calling the getJSON() method.
 //    ex. $subscription_json = $chargify_subscription->getJSON();
 $request_format = 'JSON';
-$domain = null;
 $api_key = 'YOUR_API_KEY';
 
-$connector = new ChargifyConnector($domain, $api_key);
+$connector = new ChargifyConnector($api_key);
 
 try {
 	$new_subscription_json = $connector->requestCreateSubscription($subscription_json,$request_format);
@@ -51,10 +49,8 @@ try {
 Example internal class usage:
 
 // setup connector
-$domain = null;
 $api_key = 'YOUR_API_KEY';
-
-$connector = new ChargifyConnector($domain, $api_key);
+$connector = new ChargifyConnector($api_key);
 
 //Customer creation
 $xml_import = null; //this is useful for populating from API response.
