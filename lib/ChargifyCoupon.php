@@ -48,7 +48,7 @@ class ChargifyCoupon extends ChargifyBase
 		if ($product_family_id == null) {
 			$product_family_id = $this->product_family_id;
 		}
-		if ($coupon_code) {
+		if ($coupon_code == null) {
 			$coupon_code = $this->code;
 		}
 	    return $this->connector->getCouponByCode($product_family_id, $coupon_code);
