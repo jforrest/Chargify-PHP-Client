@@ -113,7 +113,7 @@ class ChargifyConnector
 		if ($customer->code == 200) {
 			return $customer->response;
 		} elseif ($customer->code == 404) {
-			$errors = new SimpleXMLElement($customer->response);
+			$errors = $this->_createSimpleXmlElement($customer->response);
 			throw new ChargifyNotFoundException($customer->code, $errors);
 		}
 	}
@@ -139,14 +139,14 @@ class ChargifyConnector
 		if ($customer->code == 201) { //CREATED
 			return $customer->response;
 		} elseif ($customer->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($customer->response);
+			$errors = $this->_createSimpleXmlElement($customer->response);
 			throw new ChargifyValidationException($customer->code, $errors);
 		}
 	}
 
 	public function createCustomer($chargify_customer) {
 		$xml = $this->requestCreateCustomer($chargify_customer->getXML());
-		$customer = new SimpleXMLElement($xml);
+		$customer = $this->_createSimpleXmlElement($xml);
 		return new ChargifyCustomer($this, $customer);
 	}
 
@@ -159,17 +159,17 @@ class ChargifyConnector
 		if ($xml->code == 200) { //CREATED
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		} elseif ($xml->code == 404) { //NOT FOUND
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyNotFoundException($xml->code, $errors);
 		}
 	}
 
 	public function updateCustomer($chargify_customer) {
 		$xml = $this->requestUpdateCustomer($chargify_customer->id, $chargify_customer->getXML());
-		$customer = new SimpleXMLElement($xml);
+		$customer = $this->_createSimpleXmlElement($xml);
 		return new ChargifyCustomer($this, $customer);
 	}
 
@@ -190,7 +190,7 @@ class ChargifyConnector
 	public function getAllCustomers($page_num = 1)
 	{
 	    $xml = $this->retrieveAllCustomers($page_num);
-	    $all_customers = new SimpleXMLElement($xml);
+	    $all_customers = $this->_createSimpleXmlElement($xml);
 	    $customer_objects = array();
 
 	    foreach($all_customers as $customer)
@@ -205,7 +205,7 @@ class ChargifyConnector
 	public function getCustomerByID($id)
 	{
 	    $xml = $this->retrieveCustomerByID($id);
-	    $customer_xml_node = new SimpleXMLElement($xml);
+	    $customer_xml_node = $this->_createSimpleXmlElement($xml);
 	    $customer = new ChargifyCustomer($this, $customer_xml_node);
 
 	    return $customer;
@@ -213,7 +213,7 @@ class ChargifyConnector
 
 	public function getCustomerByReferenceID($reference_id) {
 	    $xml = $this->retrieveCustomerByReferenceID($reference_id);
-	    $customer_xml_node = new SimpleXMLElement($xml);
+	    $customer_xml_node = $this->_createSimpleXmlElement($xml);
 	    $customer = new ChargifyCustomer($this, $customer_xml_node);
 
 	    return $customer;
@@ -250,7 +250,7 @@ class ChargifyConnector
 	public function getAllProducts()
 	{
 	    $xml = $this->retrieveAllProducts();
-	    $all_products = new SimpleXMLElement($xml);
+	    $all_products = $this->_createSimpleXmlElement($xml);
 	    $product_objects = array();
 
 	    foreach($all_products as $product)
@@ -265,14 +265,14 @@ class ChargifyConnector
 	public function getProductByID($product_id)
 	{
 	    $xml = $this->retrieveProductByID($product_id);
-	    $product = new SimpleXMLElement($xml);
+	    $product = $this->_createSimpleXmlElement($xml);
 	    return new ChargifyProduct($this, $product);
 	}
 
 	public function getProductByHandle($product_handle)
 	{
 	    $xml = $this->retrieveProductByHandle($product_handle);
-	    $product = new SimpleXMLElement($xml);
+	    $product = $this->_createSimpleXmlElement($xml);
 	    return new ChargifyProduct($this, $product);
 	}
 
@@ -310,13 +310,13 @@ class ChargifyConnector
 
 	function getCouponByID($product_family_id, $coupon_id) {
 	    $xml = $this->retrieveCouponByID($product_family_id, $coupon_id);
-	    $coupon = new SimpleXMLElement($xml);
+	    $coupon = $this->_createSimpleXmlElement($xml);
 	    return new ChargifyCoupon($this, $coupon);
 	}
 
 	function getCouponByCode($product_family_id, $coupon_code) {
 	    $xml = $this->retrieveCouponByCode($product_family_id, $coupon_code);
-	    $coupon = new SimpleXMLElement($xml);
+	    $coupon = $this->_createSimpleXmlElement($xml);
 	    return new ChargifyCoupon($this, $coupon);
 	}
 
@@ -334,7 +334,7 @@ class ChargifyConnector
 		if ($xml->code == 201) { //CREATED
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		} elseif ($xml->code == 404) { //NOT FOUND
 			throw new ChargifyNotFoundException(404, "Subscription id: [{$subscription_id}] was not found.");
@@ -343,7 +343,7 @@ class ChargifyConnector
 
 	public function createCredit($subscription_id, $chargify_credit) {
 		$xml = $this->requestCreateCredit($subscription_id, $chargify_credit->getXML());
-		$credit = new SimpleXMLElement($xml);
+		$credit = $this->_createSimpleXmlElement($xml);
 		return new ChargifyCredit($this, $credit);
 	}
 
@@ -385,14 +385,14 @@ class ChargifyConnector
 		if ($xml->code == 201) { //CREATED
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
 
 	public function createSubscription($chargify_subscription) {
 		$xml = $this->requestCreateSubscription($chargify_subscription->getXML());
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
@@ -404,7 +404,7 @@ class ChargifyConnector
 		if ($xml->code == 200) {
 			return $xml->response;
 		} else {
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
@@ -418,7 +418,7 @@ class ChargifyConnector
 		if ($xml->code == 200) { //SUCCESS
 			return $xml->response;
 		} else {
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
@@ -429,7 +429,7 @@ class ChargifyConnector
 		$chargify_subscription->product_id = $chargify_product->id;
 
 		$xml = $this->requestUpdateSubscription($subscription_id, $chargify_subscription->getXML());
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
@@ -441,7 +441,7 @@ class ChargifyConnector
 		$chargify_migration->include_initial_charge = $include_initial_charge;
 
 		$xml = $this->requestUpdateSubscriptionProrated($subscription_id, $chargify_migration->getXML());
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
@@ -450,7 +450,7 @@ class ChargifyConnector
 		$chargify_subscription->credit_card_attributes = $chargify_credit_card;
 
 		$xml = $this->requestUpdateSubscription($subscription_id, $chargify_subscription->getXML());
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
@@ -462,7 +462,7 @@ class ChargifyConnector
 		if ($xml->code == 200) { //SUCCESS
 			return true;
 		} else {
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
@@ -482,14 +482,14 @@ class ChargifyConnector
 		if ($xml->code == 200) {
 			return $xml->response;
 		} else {
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
 
 	public function reactivateSubscription($subscription_id) {
 		$xml = $this->requestReactivateSubscription($subscription_id);
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
@@ -502,20 +502,20 @@ class ChargifyConnector
 		if ($xml->code == 200) {
 			return $xml->response;
 		} else {
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
 
 	public function resetSubscriptionBalance($subscription_id) {
 		$xml = $this->requestResetSubscriptionBalance($subscription_id);
-		$subscription = new SimpleXMLElement($xml);
+		$subscription = $this->_createSimpleXmlElement($xml);
 		return new ChargifySubscription($this, $subscription);
 	}
 
 	public function getSubscriptions($page = 1, $per_page = 2000) {
 	    $xml = $this->retrieveSubscriptions($page, $per_page);
-	    $subscriptions = new SimpleXMLElement($xml);
+	    $subscriptions = $this->_createSimpleXmlElement($xml);
 	    $subscription_objects = array();
 
 	    foreach($subscriptions as $subscription)
@@ -530,7 +530,7 @@ class ChargifyConnector
 	public function getSubscriptionsByCustomerID($id)
 	{
 	    $xml = $this->retrieveSubscriptionsByCustomerID($id);
-	    $subscriptions = new SimpleXMLElement($xml);
+	    $subscriptions = $this->_createSimpleXmlElement($xml);
 	    $subscription_objects = array();
 
 	    foreach($subscriptions as $subscription)
@@ -545,7 +545,7 @@ class ChargifyConnector
 	public function getSubscriptionsByID($id)
 	{
 	    $xml = $this->retrieveSubscriptionsByID($id);
-	    $subscription = new SimpleXMLElement($xml);
+	    $subscription = $this->_createSimpleXmlElement($xml);
 
 	    return new ChargifySubscription($this, $subscription);
 	}
@@ -563,17 +563,17 @@ class ChargifyConnector
 		if ($xml->code == 201) { //CREATED
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		} elseif ($xml->code == 404) { //NOT FOUND
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyNotFoundException($xml->code, $errors);
 		}
 	}
 
 	public function createCharge($subscription_id, $chargify_charge) {
 		$xml = $this->requestCreateCharge($subscription_id, $chargify_charge->getXML());
-		$charge = new SimpleXMLElement($xml);
+		$charge = $this->_createSimpleXmlElement($xml);
 		return new ChargifyCharge($this, $charge);
 	}
 
@@ -621,14 +621,14 @@ class ChargifyConnector
 		if ($xml->code == 200) { //CREATED
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
 
 	public function createMeteredComponent($subscription_id, $component_id, $chargify_usage) {
 		$xml = $this->requestCreateMeteredComponent($subscription_id, $component_id, $chargify_usage->getXML());
-		$usage = new SimpleXMLElement($xml);
+		$usage = $this->_createSimpleXmlElement($xml);
 		return new ChargifyUsage($this, $usage);
 	}
 
@@ -649,14 +649,14 @@ class ChargifyConnector
 		if ($xml->code == 200) { //SUCCESS
 			return $xml->response;
 		} elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
 
 	public function updateQuantityBasedComponent($subscription_id, $component_id, $chargify_component) {
 		$xml = $this->requestUpdateQuantityBasedComponent($subscription_id, $component_id, $chargify_component->getXML());
-		$component = new SimpleXMLElement($xml);
+		$component = $this->_createSimpleXmlElement($xml);
 		return new ChargifyQuantityBasedComponent($this, $component);
 	}
 
@@ -666,7 +666,7 @@ class ChargifyConnector
 
 	public function getAllMeteredComponents($subscription_id, $component_id) {
 		$xml = $this->retrieveAllMeteredComponents($subscription_id, $component_id);
-		$all_metered_components = new SimpleXMLElement($xml);
+		$all_metered_components = $this->_createSimpleXmlElement($xml);
 		$component_objects = array();
 
 		foreach ($all_metered_components as $metered_component) {
@@ -678,7 +678,7 @@ class ChargifyConnector
 
 	public function getAllMeteredComponentsByProductFamily($product_family_id) {
 		$xml = $this->retrieveAllMeteredComponentsByProductFamily($product_family_id);
-		$all_metered_components = new SimpleXMLElement($xml);
+		$all_metered_components = $this->_createSimpleXmlElement($xml);
 		$component_objects = array();
 
 		foreach ($all_metered_components as $metered_component) {
@@ -690,7 +690,7 @@ class ChargifyConnector
 
 	public function getAllQuantityBasedComponents($subscription_id, $component_id) {
 		$xml = $this->retrieveAllQuantityBasedComponents($subscription_id, $component_id);
-		$quantity_based_component = new SimpleXMLElement($xml);
+		$quantity_based_component = $this->_createSimpleXmlElement($xml);
 		return new ChargifyQuantityBasedComponent($this, $quantity_based_component);
 	}
 
@@ -716,7 +716,7 @@ class ChargifyConnector
 		if ($xml->code == 200) { //SUCCESS
 			return $xml->response;
 		} else { //ERROR
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
@@ -731,7 +731,7 @@ class ChargifyConnector
 		if ($xml->code == 200) { //SUCCESS
 			return $xml->response;
 		} else { //ERROR
-			$errors = new SimpleXMLElement($xml->response);
+			$errors = $this->_createSimpleXmlElement($xml->response);
 			throw new ChargifyValidationException($xml->code, $errors);
 		}
 	}
@@ -760,7 +760,7 @@ class ChargifyConnector
 	public function getAllTransactions($options = array()) {
 		$xml = $this->retrieveAllTransactions('XML', $options);
 		$result = array();
-		$transactions = new SimpleXMLElement($xml);
+		$transactions = $this->_createSimpleXmlElement($xml);
 		foreach($transactions as $key => $element)
 		{
 			$result[] = new ChargifyTransaction($this, $element);
@@ -771,7 +771,7 @@ class ChargifyConnector
 	public function getTransactionsBySubscriptionID($subscription_id, $options = array()) {
 		$xml = $this->retrieveTransactionsBySubscriptionID($subscription_id, 'XML', $options);
 		$result = array();
-		$transactions = new SimpleXMLElement($xml);
+		$transactions = $this->_createSimpleXmlElement($xml);
 		foreach($transactions as $key => $element)
 		{
 			$result[] = new ChargifyTransaction($this, $element);
@@ -803,5 +803,22 @@ class ChargifyConnector
 	  }
 
 	  return self::$_defaultConnector;
+	}
+	
+	/**
+	 * 
+	 * @param string xml
+	 * 
+	 * @throws ChargifyException if not valid exception
+	 * 
+	 * @return SimpleXMLElement 
+	 */
+	protected function _createSimpleXmlElement($xml)
+	{
+	  try {
+	    return new SimpleXMLElement($xml);
+	  } catch (Exception $e) {
+	    throw new ChargifyException('Not valid xml provided, instead of it a string given: `'.$xml.'`', null, $e);
+	  }
 	}
 }
