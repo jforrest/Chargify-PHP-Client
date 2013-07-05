@@ -787,5 +787,30 @@ class ChargifyConnector
 		}
 		return $result;		
 	}	
+    
+	public function retrieveStatementsBySubcsriptionID($subscription_id, $format='XML') {
+	    $extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+	    $base_url = "/subscriptions/{$subscription_id}/statements" . $extension;
+	
+	    $xml = $this->sendRequest($base_url, $format, 'GET');
+	    if ($xml->code == 200) {
+	        return $xml->response;
+	    } else {
+	        $errors = new SimpleXMLElement((string)$xml->response);
+	        throw new ChargifyValidationException($xml->code, $errors);
+	    }
+	}
+	
+	public function getAllStatementsBySubscriptionID($subscription_id)
+	{
+	    $xml = $this->retrieveStatementsBySubcsriptionID($subscription_id);
+	    $result = array();
+	    $transactions = new SimpleXMLElement($xml);
+	    foreach($transactions as $key => $element)
+	    {
+	        $result[] = new ChargifyStatement($element, $this->test_mode);
+	    }
+	    return $result;
+	}
 }
 ?>
