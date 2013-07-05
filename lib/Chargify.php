@@ -13,5 +13,6 @@ require_once('ChargifyProductFamily.php');
 require_once('ChargifyQuantityBasedComponent.php');
 require_once('ChargifySubscription.php');
 require_once('ChargifyTransaction.php');
+require_once('ChargifyStatement.php');
 require_once('ChargifyUsage.php');
 ?>
