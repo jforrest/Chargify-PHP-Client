@@ -1,5 +1,6 @@
 <?php
 require_once('ChargifyBase.php');
+require_once('ChargifyAdjustment.php');
 require_once('ChargifyCharge.php');
 require_once('ChargifyConnector.php');
 require_once('ChargifyCoupon.php');

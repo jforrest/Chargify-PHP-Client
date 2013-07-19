@@ -601,6 +601,40 @@ class ChargifyConnector
 		
 		return $this->createCharge($subscription_id, $chargify_charge);
 	}	
+    /****************************************************
+     ***********    Adjustment FUNCTIONS     ************
+     ****************************************************/
+    public function requestCreateAdjustment($subscription_id, $chargeRequest, $format = 'XML') {
+        $extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+        $base_url = "/subscriptions/{$subscription_id}/adjustments" . $extension;
+
+        $xml = $this->sendRequest($base_url, $format, 'POST', $chargeRequest);
+
+        if ($xml->code == 201) { //CREATED
+            return $xml->response;
+        } elseif ($xml->code == 422) { //UNPROCESSABLE ENTITY
+            $errors = new SimpleXMLElement($xml->response);
+            throw new ChargifyValidationException($xml->code, $errors);
+        } elseif ($xml->code == 404) { //NOT FOUND
+            $errors = new SimpleXMLElement($xml->response);
+            throw new ChargifyNotFoundException($xml->code, $errors);
+        }
+    }
+
+
+    public function createAdjustment($subscription_id, $chargify_charge) {
+        $xml = $this->requestCreateAdjustment($subscription_id, $chargify_charge->getXML());
+        $charge = new SimpleXMLElement($xml);
+        return new ChargifyAdjustment($charge, $this->test_mode);
+    }
+
+    public function createAdjustmentByAmount($subscription_id, $amount, $memo) {
+        $chargify_charge = new ChargifyAdjustment(null, $this->test_mode);
+        $chargify_charge->amount = $amount;
+        $chargify_charge->memo = $memo;
+
+        return $this->createAdjustment($subscription_id, $chargify_charge);
+    }
 	
 	/****************************************************
 	 **********     COMPONENT FUNCTIONS     *************
