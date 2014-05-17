@@ -1,12 +1,12 @@
 <?php
- 
+
 //Reference Documentation: http://support.chargify.com/faqs/api/api-products
 
-class ChargifyProduct extends ChargifyBase 
+class ChargifyProduct extends ChargifyBase
 {
 	//******************************
 	//*** OUTPUT ONLY VARIABLES ****
-	//******************************	
+	//******************************
 	var $price_in_cents;
 	var $name;
 	var $handle;
@@ -29,18 +29,18 @@ class ChargifyProduct extends ChargifyBase
 	var $created_at;
 	var $updated_at;
  	var $archived_at;
- 	
+
  	private $connector;
-	public function __construct(SimpleXMLElement $product_xml_node = null, $test_mode = false)
+	public function __construct(ChargifyConnector $connector, SimpleXMLElement $product_xml_node = null)
 	{
-		$this->connector = new ChargifyConnector($test_mode);
+		$this->connector = $connector;
 		if ($product_xml_node) {
 	    //Load object dynamically and convert SimpleXMLElements into strings
-	    foreach($product_xml_node as $key => $element) { 
-			if($key == 'product_family') { 
-				$this->product_family = new ChargifyProductFamily($element); 
-			} else { 
-				$this->$key = (string)$element; 
+	    foreach($product_xml_node as $key => $element) {
+			if($key == 'product_family') {
+				$this->product_family = new ChargifyProductFamily($element);
+			} else {
+				$this->$key = (string)$element;
 			}
 	    }
 		}
@@ -51,15 +51,15 @@ class ChargifyProduct extends ChargifyBase
   	protected function getName() {
   		return "product";
   	}
-  	
+
   	public function getAllProducts() {
   		return $this->connector->getAllProducts();
   	}
-  	
+
   	public function getByID() {
 		return $this->connector->getProductByID($this->id);
   	}
-  	
+
   	public function getByHandle() {
   		return $this->connector->getProductByHandle($this->handle);
   	}
