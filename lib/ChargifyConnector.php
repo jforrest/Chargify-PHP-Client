@@ -285,7 +285,21 @@ class ChargifyConnector
 	    return new ChargifyProduct($product, $this->test_mode);
 	}
 	
-	
+	/****************************************************
+	 ********     CUSTOM FIELD FUNCTIONS     ************
+	 ****************************************************/
+
+	//GET META DATA (CUSTOM FIELDS)
+	public function retrieveSubscriptionMetaData($subscription_id, $format = 'XML') {
+		$extension = strtoupper($format) == 'XML' ? '.xml' : '.json';
+		$base_url = "/subscriptions/{$subscription_id}/metadata" . $extension;
+
+		$metaData = $this->sendRequest($base_url, $format);
+		return $metaData->response;		
+	}
+
+
+
 	/****************************************************
 	 ************     COUPON FUNCTIONS     **************
 	 ****************************************************/
