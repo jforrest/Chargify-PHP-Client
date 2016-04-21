@@ -48,10 +48,13 @@ class ChargifyConnector
         $ch = curl_init();
 
         curl_setopt($ch, CURLOPT_URL, "https://" . $this->active_domain . ".chargify.com" . $uri);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // Don't verify Client SSL Certificate
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2); // Don't verify Host SSl Certificate
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, false); // Don't follow redirection
         curl_setopt($ch, CURLOPT_MAXREDIRS, 1);
+        curl_setopt($ch, CURLOPT_FTP_SSL, CURLFTPSSL_ALL); // Force to ssl connection
+        curl_setopt($ch, CURLOPT_FTPSSLAUTH, CURLFTPAUTH_TLS); // Set to use TLS
+        curl_setopt($ch, CURLOPT_SSLVERSION, 6); // Set SSL protocol to TLSv1.2
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         if ($format == 'XML') {
 	        curl_setopt($ch, CURLOPT_HTTPHEADER, array(
